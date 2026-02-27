@@ -50,6 +50,9 @@ public class Player : MonoBehaviour
     private bool isAirborne;
     private bool isWallDetected;
 
+
+    private Joystick joystick;
+
     private float xInput;
     private float yInput;
 
@@ -67,6 +70,9 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         cd = GetComponent<CapsuleCollider2D>();
         anim = GetComponentInChildren<Animator>();
+
+        FindFirstObjectByType<UI_JumpButton>().UpdatePlayerRef(this);
+        joystick = FindFirstObjectByType<Joystick>();
     }
 
     private void Start()
@@ -79,10 +85,10 @@ public class Player : MonoBehaviour
         UpdateSkin();
     }
 
-   
+
 
     private void Update()
-    { 
+    {
         UpdateAirbornStatus();
 
         if (canBeControlled == false)
@@ -116,7 +122,7 @@ public class Player : MonoBehaviour
             }
             else
             {
-                ObjectCreator.instance.CreateObject(fruitDrop, transform,true);
+                ObjectCreator.instance.CreateObject(fruitDrop, transform, true);
                 gameManager.RemoveFruit();
             }
 
@@ -131,7 +137,7 @@ public class Player : MonoBehaviour
     }
 
 
-    
+
     private void UpdateGameDifficulty()
     {
         DifficultyManager difficultyManager = DifficultyManager.instance;
@@ -196,13 +202,13 @@ public class Player : MonoBehaviour
         if (transform.position.x < sourceDamageXPosition)
             knockbackDir = -1;
 
-        if(isKnocked)
+        if (isKnocked)
             return;
 
         AudioManager.instance.PlaySFX(9);
         CameraManager.instance.ScreenShake(knockbackDir);
         StartCoroutine(KnockbackRoutine());
-        
+
         rb.linearVelocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
     }
     private IEnumerator KnockbackRoutine()
@@ -221,16 +227,16 @@ public class Player : MonoBehaviour
     {
         AudioManager.instance.PlaySFX(0);
 
-        GameObject newDeathVfx = Instantiate(deathVfx,transform.position,Quaternion.identity);
+        GameObject newDeathVfx = Instantiate(deathVfx, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 
-    public void Push(Vector2 direction,float duration = 0)
+    public void Push(Vector2 direction, float duration = 0)
     {
-        StartCoroutine(PushCouroutine(direction,duration));
+        StartCoroutine(PushCouroutine(direction, duration));
     }
 
-    private IEnumerator PushCouroutine(Vector2 direction,float duration)
+    private IEnumerator PushCouroutine(Vector2 direction, float duration)
     {
         canBeControlled = false;
 
@@ -270,14 +276,14 @@ public class Player : MonoBehaviour
 
     private void HandleInput()
     {
-        xInput = Input.GetAxisRaw("Horizontal");
-        yInput = Input.GetAxisRaw("Vertical");
-
+        // xInput = Input.GetAxisRaw("Horizontal");
+        // yInput = Input.GetAxisRaw("Vertical");
+        xInput = joystick.Horizontal;
+        yInput = joystick.Vertical;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             JumpButton();
-            RequestBufferJump();
         }
     }
 
@@ -301,7 +307,7 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    private void JumpButton()
+    private void JumpAttempt()
     {
         bool coyoteJumpAvalible = Time.time < coyoteJumpActivated + coyoteJumpWindow;
 
@@ -322,6 +328,11 @@ public class Player : MonoBehaviour
     }
 
 
+    public void JumpButton()
+    {
+        JumpAttempt();
+        RequestBufferJump();
+    }
 
     private void Jump()
     {
