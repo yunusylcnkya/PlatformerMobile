@@ -46,8 +46,8 @@ public class Trap_FallingPlatform : MonoBehaviour
 
         float yOffset = travelDistance / 2;
 
-        wayPoints[0] = transform.position + new Vector3(0,yOffset, 0);
-        wayPoints[1] = transform.position + new Vector3(0,-yOffset, 0);
+        wayPoints[0] = transform.position + new Vector3(0, yOffset, 0);
+        wayPoints[1] = transform.position + new Vector3(0, -yOffset, 0);
     }
 
     private void Update()
@@ -79,7 +79,7 @@ public class Trap_FallingPlatform : MonoBehaviour
 
         impactTimer -= Time.deltaTime;
         transform.position =
-            Vector2.MoveTowards(transform.position, transform.position + (Vector3.down* 10), impactSpeed * Time.deltaTime);
+            Vector2.MoveTowards(transform.position, transform.position + (Vector3.down * 10), impactSpeed * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -96,7 +96,7 @@ public class Trap_FallingPlatform : MonoBehaviour
             impactTimer = impactDuration;
             impactHappend = true;
         }
-            
+
     }
 
     private void SwitchOffPlatform()
@@ -105,7 +105,7 @@ public class Trap_FallingPlatform : MonoBehaviour
 
         canMove = false;
 
-        rb.isKinematic = false;
+        rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 3.5f;
         rb.linearDamping = .5f;
 
